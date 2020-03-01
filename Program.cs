@@ -1,11 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Sudoku
 {
     class Program
     {
+        private static Random _rnd = new Random();
 
-        private static char[,] _sudoku_9x9_mainGrid = new char[,] {
+        private static List<char[,]> sudokuGrids = new List<char[,]>(){
+        new char[,]
+        {
             {'5','1','.','.','.','.','.','8','3' },
             {'8','.','.','4','1','6','.','.','5' },
             {'.','.','.','.','.','.','.','.','.' },
@@ -15,7 +20,45 @@ namespace Sudoku
             {'.','.','.','.','.','.','.','.','.' },
             {'6','.','.','1','5','7','.','.','4' },
             {'7','8','.','.','.','.','.','9','6' }
+        },
+        new char[,]
+        {
+            {'7','.','.','.','9','.','.','.','3'},
+            {'2','.','.','4','6','8','.','.','1'},
+            {'.','.','8','.','.','.','6','.','.'},
+            {'.','4','.','.','2','.','.','9','.'},
+            {'.','.','.','3','.','4','.','.','.'},
+            {'.','8','.','.','1','.','.','3','.'},
+            {'.','.','9','.','.','.','7','.','.'},
+            {'5','.','.','1','4','2','.','.','6'},
+            {'8','.','.','.','5','.','.','.','2'}},
+
+         new char[,]
+         {
+             {'.','5','2','3','.','.','6','.','.'},
+            {'6','.','.','.','4','.','.','.','3'},
+            {'.','.','.','.','.','.','.','.','.'},
+            {'.','.','.','6','3','.','.','1','.'},
+            {'4','7','.','.','.','.','.','3','5'},
+            {'.','2','.','.','5','8','.','.','.'},
+            {'.','.','.','.','.','.','.','.','.'},
+            {'1','.','.','.','9','.','.','.','6'},
+            {'.','.','5','.','.','1','7','2','.'}},
+
+        new char[,]
+        {
+            {'5','.','.','.','.','.','1','.','7'},
+            {'.','.','4','3','.','.','5','.','.'},
+            {'.','.','.','2','.','.','.','8','.'},
+            {'.','9','.','4','.','2','.','.','.'},
+            {'4','.','.','.','.','.','.','.','6'},
+            {'.','.','.','1','.','3','.','5','.'},
+            {'.','8','.','.','.','4','.','.','.'},
+            {'.','.','2','.','.','6','7','.','.'},
+            {'3','.','9','.','.','.','.','.','1'}}
         };
+       
+
         static void Main(string[] args)
         {
             int userInput;
@@ -25,11 +68,28 @@ namespace Sudoku
 
                 if (userInput == 1)
                 {
-                    File.ReadFile();
+                    var grid = FileHandler.GetSudokuGrid();
+
+                    if(grid.GetLength(0)==9 && grid.GetLength(0) == 9)
+                    {
+                        Game.puzzleSolver(grid);
+                    }
+                    else
+                    {
+                        UI.ShowMsg("Not a valid SUDOKU file, Please check the content and try again!  Look below for a valid SODOKU file format");
+                        UI.ShowValidSudokuFormat();
+                    }
+                   
                 }
                 if (userInput == 2)
                 {
-                    Game.puzzleSolver(_sudoku_9x9_mainGrid);
+                    int randNum = _rnd.Next(0, 4);
+                    Game.puzzleSolver(sudokuGrids[randNum]);
+                }
+
+                if (userInput == 3)
+                {
+                    UI.ShowMsg("This functionality is coming soon!");
                 }
 
             } while (userInput != 4);
