@@ -13,6 +13,50 @@ namespace Sudoku
         {
             '1','2','3','4','5','6','7','8','9'
         };
+
+        public static void createSudokuGrid(char[,] mainGrid)
+        {
+
+            SolveGrid(mainGrid, shuffle:true);
+            lookup.Clear();
+
+            FillDots(mainGrid);
+
+            ShowSolvedGrid(mainGrid);
+
+            var res = FileHandler.PersistSudokuGrid(mainGrid);
+            EmptyGrid(mainGrid);         
+        }
+
+        private static void EmptyGrid(char[,] mainGrid)
+        {
+            for (int row = 0; row < mainGrid.GetLength(0); row++)
+            {
+                for (int col = 0; col < mainGrid.GetLength(1); col++)
+                {
+                    mainGrid[row, col] = '.';
+                }              
+            }
+        }
+
+        private static void FillDots(char[,] mainGrid)
+        {
+            var mainGridSize = mainGrid.GetLength(0);
+
+            for (int row = 0; row < mainGridSize; row++)
+            {
+                
+                int[] digitsRand = Enumerable
+                    .Repeat(0, 30)
+                    .Select(i => _random.Next(0, 9)).Distinct().Take(_random.Next(3, 6))
+                    .ToArray();
+
+                foreach(var col in digitsRand)
+                {
+                    mainGrid[row, col] = '.';
+                }
+            }
+        }
         public static void puzzleSolver(char[,] mainGrid)
         {
             var isGridValid = CheckGridValidity(mainGrid);
@@ -29,13 +73,14 @@ namespace Sudoku
 
             SolveGrid(mainGrid);
 
+            lookup.Clear();
+
             ShowSolvedGrid(mainGrid);
 
-            UI.ShowMsg("Exiting!");
-            lookup.Clear();
+           var res = FileHandler.PersistSudokuGrid(mainGrid);      
         }
 
-        private static bool SolveGrid(char[,] mainGrid, int row = 0, int col = 0)
+        private static bool SolveGrid(char[,] mainGrid, int row = 0, int col = 0, bool shuffle = false)
         {
             var mainGridSize = mainGrid.GetLength(0); 
             var subGridSize = 3;
@@ -54,6 +99,11 @@ namespace Sudoku
                 return SolveGrid(mainGrid, isColumnEnd ? row + 1 : row, isColumnEnd ? 0 : col + 1);
             }
             var validDigits = FetchValidNumbers(row, col);
+
+            if (shuffle)
+            {
+                Shuffle(validDigits);
+            }
 
             foreach (var digit in validDigits)
             {
@@ -143,40 +193,43 @@ namespace Sudoku
 
         private static void Classify()
         {
-         var totalSubGridDigits =lookup.Select(item => item).Where(item => item.StartsWith("subgrid")).Count();
-
             var totalGridStrength = 1;
 
-            for(int s = 0; s < 9; s++)
+            for(int subGridDigit = 0; subGridDigit < 9; subGridDigit++)
             {
-                var eachSubGridDigitsCount = lookup.Select(item => item).Where(item => item.StartsWith($"subgrid{s}")).Count();
+                var eachSubGridDigitsCount = lookup.Select(item => item).Where(item => item.StartsWith($"subgrid{subGridDigit}")).Count();
 
                 totalGridStrength *= eachSubGridDigitsCount;
             }
 
             if(totalGridStrength < 5000)
             {
-                UI.ShowMsg($"Given SUDOKU grid is classified as SAMURAI:  Grid Strength: {totalGridStrength}");
+                UI.ShowMsg($"Given SUDOKU grid is classified as SAMURAI");
                 return;
             }
 
             if (totalGridStrength < 10000)
             {
-                UI.ShowMsg($"Given SUDOKU grid is classified as HARD:  Grid Strength :{totalGridStrength}");
+                UI.ShowMsg($"Given SUDOKU grid is classified as HARD");
                 return;
             }
 
             if (totalGridStrength < 30000)
             {
-                UI.ShowMsg($"Given SUDOKU grid is classified as Medium:  Grid Strength :{totalGridStrength}");
+                UI.ShowMsg($"Given SUDOKU grid is classified as MEDIUM");
                 return;
             }
 
-            UI.ShowMsg($"Given SUDOKU grid is classified as EASY:  Grid Strength :{totalGridStrength}");
+            UI.ShowMsg($"Given SUDOKU grid is classified as EASY");
         }
 
         private static bool ShowSolvedGrid(char[,] mainGrid, int row = 0, int col = 0)
         {
+            if (row==0 && col == 0)
+            {
+                UI.ShowHorizontalDivider();
+                UI.NewLineWithTab();
+            }
             var mainGridSize = mainGrid.GetLength(0);
             Console.Write($"{mainGrid[row, col]}\t ");
 
@@ -184,7 +237,7 @@ namespace Sudoku
             var isColumnEnd = col > mainGridSize - 1;
             if (isColumnEnd)
             {
-                Console.WriteLine($"");
+                UI.NewLineWithTab();
                 col = 0;
                 row += 1;
             }
@@ -192,10 +245,27 @@ namespace Sudoku
             var isRowEnd = row > mainGridSize - 1;
             if (isRowEnd)
             {
+                UI.NewLine();
+                UI.ShowHorizontalDivider();
                 return true;
             }
 
             return ShowSolvedGrid(mainGrid, row, col);
+        }
+
+        private static char[] Shuffle(char[] charArray)
+        {
+            char[] shuffledArray = new char[charArray.Length];
+            int rndNo;
+
+            Random rnd = new Random();
+            for (int i = charArray.Length; i >= 1; i--)
+            {
+                rndNo = rnd.Next(1, i + 1) - 1;
+                shuffledArray[i - 1] = charArray[rndNo];
+                charArray[rndNo] = charArray[i - 1];
+            }
+            return shuffledArray;
         }
 
     }

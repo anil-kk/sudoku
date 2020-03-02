@@ -12,16 +12,31 @@ namespace Sudoku
             Console.WriteLine(message);
             Console.WriteLine("");
         }
+
+        static public void ShowHorizontalDivider()
+        {
+            Console.WriteLine("-------------------------------------------------------------------------------");
+        }
+
+        static public void NewLineWithTab()
+        {
+            Console.WriteLine($"");
+            Console.Write($"\t");
+        }
+        static public void NewLine()
+        {
+            Console.WriteLine($"");
+        }
         static public int ShowMainMenu()
         {
-            Console.WriteLine("==================SUDOKU=====================");
+            Console.WriteLine("==========================SUDOKU=================================");
             Console.WriteLine("Select from main options below:");
             Console.WriteLine();
-            Console.WriteLine("1. Read sudoku from a text file and solve");
+            Console.WriteLine("1. Read unsolved sudoku from a file, Solve and Classify");
             Console.WriteLine("2. Solve Sudoku");
-            Console.WriteLine("3. Create sudoku based on difficulty");
+            Console.WriteLine("3. Create a new unsolved sudoku and save it to file");
             Console.WriteLine("4. Exit");
-            Console.WriteLine("=============================================");
+            Console.WriteLine("===============================================================");
             var result = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(result) || result.Length != 1)
@@ -40,16 +55,36 @@ namespace Sudoku
 
         }
 
-        static public string GetFilenameFromUser()
+        static public string GetFilenameFromUser(string msg)
         {
             string result;
             do
             {
-                Console.WriteLine("Enter file name: (ex: sudoku.txt)");
+                ShowMsg(msg);
                 result = Console.ReadLine();
 
             } while (!(result.Length >= 5 && result.EndsWith(".txt")));
             return result;
+        }
+
+
+        static public bool UserPromt()
+        {
+            string result;
+         
+            do
+            {
+                ShowMsg("Do you want to save the result to a file? Yes or No");
+                result = Console.ReadLine().ToLower();
+            } while (result != "yes" && result!="no" && result != "y" && result != "n");
+
+         
+            if (result == "y" || result == "yes")
+            {
+                return true;
+            }
+
+            return false;
         }
 
         internal static void ShowValidSudokuFormat()
