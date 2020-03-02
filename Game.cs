@@ -25,6 +25,8 @@ namespace Sudoku
 
             UI.ShowMsg("Given SUDOKU grid seems to be a valid one, solving...");
 
+            Classify();
+
             SolveGrid(mainGrid);
 
             ShowSolvedGrid(mainGrid);
@@ -137,6 +139,40 @@ namespace Sudoku
             }
 
             return CheckGridValidity(mainGrid, row, col);
+        }
+
+        private static void Classify()
+        {
+         var totalSubGridDigits =lookup.Select(item => item).Where(item => item.StartsWith("subgrid")).Count();
+
+            var totalGridStrength = 1;
+
+            for(int s = 0; s < 9; s++)
+            {
+                var eachSubGridDigitsCount = lookup.Select(item => item).Where(item => item.StartsWith($"subgrid{s}")).Count();
+
+                totalGridStrength *= eachSubGridDigitsCount;
+            }
+
+            if(totalGridStrength < 5000)
+            {
+                UI.ShowMsg($"Given SUDOKU grid is classified as SAMURAI:  Grid Strength: {totalGridStrength}");
+                return;
+            }
+
+            if (totalGridStrength < 10000)
+            {
+                UI.ShowMsg($"Given SUDOKU grid is classified as HARD:  Grid Strength :{totalGridStrength}");
+                return;
+            }
+
+            if (totalGridStrength < 30000)
+            {
+                UI.ShowMsg($"Given SUDOKU grid is classified as Medium:  Grid Strength :{totalGridStrength}");
+                return;
+            }
+
+            UI.ShowMsg($"Given SUDOKU grid is classified as EASY:  Grid Strength :{totalGridStrength}");
         }
 
         private static bool ShowSolvedGrid(char[,] mainGrid, int row = 0, int col = 0)
