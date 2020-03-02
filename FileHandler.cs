@@ -15,6 +15,8 @@ namespace Sudoku
             var fileName = UI.GetFilenameFromUser();
 
             List<string> sudokuRows = new List<string>();
+
+            try { 
             using (StreamReader reader = new StreamReader(directory + @"\" + fileName))
             {
                 while (!reader.EndOfStream)
@@ -25,14 +27,17 @@ namespace Sudoku
 
             var result = sudokuRows.Select(item => item.ToCharArray()).ToArray();
 
-            if(result.GetLength(0) == 9)
+            if(result.GetLength(0) == 9 && result[0].Length == 9)
             {
                 return JaggedArrayTo2D(result);
             }
             return new char[,] { };
+            }
 
-
-            
+            catch
+            {
+                return new char[,] { };
+            }
         }
 
         static char[,] JaggedArrayTo2D(char[][] jaggedArray)
