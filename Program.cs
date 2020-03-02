@@ -84,6 +84,7 @@ namespace Sudoku
                 if (userInput == 2)
                 {
                     int randNum = _rnd.Next(0, 4);
+
                     Game.puzzleSolver(sudokuGrids[randNum]);
                 }
 

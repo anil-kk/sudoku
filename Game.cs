@@ -28,7 +28,9 @@ namespace Sudoku
             SolveGrid(mainGrid);
 
             ShowSolvedGrid(mainGrid);
-            UI.ShowMsg("EXIT!");
+
+            UI.ShowMsg("Exiting!");
+            lookup.Clear();
         }
 
         private static bool SolveGrid(char[,] mainGrid, int row = 0, int col = 0)
